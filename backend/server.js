@@ -5,8 +5,12 @@ const cors = require('cors');
 const app = express();
 const port = 5001;
 
-app.use(cors());
-app.use(bodyParser.json());
+app.use(cors({
+    origin: [
+      'http://localhost:3000',
+      'https://email-parser-phi.vercel.app/' // Your live frontend URL
+    ]
+  }));
 
 function capitalize(str) {
   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
