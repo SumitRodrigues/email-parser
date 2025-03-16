@@ -6,6 +6,12 @@ const axios = require('axios');
 const app = express();
 const port = process.env.PORT || 5001;
 
+const rateLimit = require('express-rate-limit');
+app.use(rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100 // Limit each IP to 100 requests per window
+}));
+
 // Enhanced CORS Configuration
 const allowedOrigins = [
   'https://email-parser-k288jxrhg-sumit-rodrigues-projects.vercel.app',
@@ -58,13 +64,15 @@ async function getLinkedInProfile(profileUrl) {
     const profileId = matches[1];
     
     const authResponse = await axios.post(
-      'https://www.linkedin.com/oauth/v2/accessToken',
-      new URLSearchParams({
-        grant_type: 'client_credentials',
-        client_id: LINKEDIN_CLIENT_ID,
-        client_secret: LINKEDIN_CLIENT_SECRET
-      })
-    );
+        'https://www.linkedin.com/oauth/v2/accessToken',
+        new URLSearchParams({
+          grant_type: 'authorization_code',
+          code: authorizationCode,
+          redirect_uri: REDIRECT_URI,
+          client_id: LINKEDIN_CLIENT_ID,
+          client_secret: LINKEDIN_CLIENT_SECRET
+        })
+      );
 
     const profileResponse = await axios.get(
       `${LINKEDIN_API_ENDPOINT}/people/(vanityName:${profileId})?projection=(id,profilePicture(displayImage~:playableStreams),firstName,lastName,headline)`,
