@@ -56,62 +56,82 @@ function parseEmail(email) {
 
 // LinkedIn Integration
 async function getLinkedInProfile(profileUrl) {
-  try {
-    const regex = /linkedin\.com\/in\/([a-zA-Z0-9-]+)/;
-    const matches = profileUrl.match(regex);
-    if (!matches) throw new Error('Invalid LinkedIn URL');
-
-    const profileId = matches[1];
-    
-    const authResponse = await axios.post(
+    try {
+      // Improved URL validation
+      const regex = /linkedin\.com\/in\/([a-zA-Z0-9-]+)\/?/;
+      const matches = profileUrl.match(regex);
+      if (!matches) throw new Error('Invalid LinkedIn URL format');
+  
+      // Get access token using authorization code flow
+      const authResponse = await axios.post(
         'https://www.linkedin.com/oauth/v2/accessToken',
         new URLSearchParams({
           grant_type: 'authorization_code',
-          code: authorizationCode,
-          redirect_uri: REDIRECT_URI,
+          code: 'AUTHORIZATION_CODE', // Should come from frontend OAuth flow
+          redirect_uri: process.env.LINKEDIN_REDIRECT_URI,
           client_id: LINKEDIN_CLIENT_ID,
           client_secret: LINKEDIN_CLIENT_SECRET
         })
       );
-
-    const profileResponse = await axios.get(
-      `${LINKEDIN_API_ENDPOINT}/people/(vanityName:${profileId})?projection=(id,profilePicture(displayImage~:playableStreams),firstName,lastName,headline)`,
-      {
-        headers: {
-          'Authorization': `Bearer ${authResponse.data.access_token}`
+  
+      // Get profile data with proper headers
+      const profileResponse = await axios.get(
+        `${LINKEDIN_API_ENDPOINT}/userinfo`,
+        {
+          headers: {
+            'Authorization': `Bearer ${authResponse.data.access_token}`,
+            'Content-Type': 'application/json'
+          }
         }
-      }
-    );
-
-    return {
-      firstName: profileResponse.data.firstName?.localized?.en_US,
-      lastName: profileResponse.data.lastName?.localized?.en_US,
-      jobTitle: profileResponse.data.headline?.localized?.en_US,
-      profilePicture: profileResponse.data.profilePicture?.['displayImage~']?.elements?.[0]?.identifiers?.[0]?.identifier
-    };
-  } catch (error) {
-    console.error('LinkedIn API Error:', error);
-    throw new Error('Failed to fetch LinkedIn profile');
+      );
+  
+      return {
+        firstName: profileResponse.data.given_name,
+        lastName: profileResponse.data.family_name,
+        jobTitle: profileResponse.data.name,
+        profilePicture: profileResponse.data.picture
+      };
+      
+    } catch (error) {
+      console.error('LinkedIn API Error Details:', {
+        message: error.message,
+        response: error.response?.data,
+        stack: error.stack
+      });
+      throw new Error(error.response?.data?.error_description || 'Profile fetch failed');
+    }
   }
-}
 
 // API Endpoints
 app.post('/api/process-emails', (req, res) => {
-  try {
-    const emails = req.body.emails
-      .map(email => email.trim())
-      .filter(email => /\S+@\S+\.\S+/.test(email));
-
-    const results = emails.map(email => ({
-      email,
-      ...parseEmail(email)
-    }));
-
-    res.json({ results });
-  } catch (error) {
-    res.status(500).json({ error: 'Error processing emails' });
-  }
-});
+    try {
+      console.log('Received emails:', req.body.emails); // Add logging
+      
+      if (!Array.isArray(req.body.emails)) {
+        return res.status(400).json({ error: 'Invalid input format' });
+      }
+  
+      const emails = req.body.emails
+        .map(email => email.trim())
+        .filter(email => {
+          const isValid = /\S+@\S+\.\S+/.test(email);
+          console.log(`Email validation: ${email} => ${isValid}`);
+          return isValid;
+        });
+  
+      console.log('Valid emails:', emails);
+      
+      const results = emails.map(email => ({
+        email,
+        ...parseEmail(email)
+      }));
+  
+      res.json({ results });
+    } catch (error) {
+      console.error('Processing error:', error); // Detailed error log
+      res.status(500).json({ error: 'Error processing emails' });
+    }
+  });
 
 app.post('/api/process-linkedin', async (req, res) => {
   try {

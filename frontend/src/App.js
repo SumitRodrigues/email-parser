@@ -71,17 +71,26 @@ function MainApp() {
 
   const processEmails = async () => {
     try {
-      const emails = input
-        .split(/[\n,]+/)
-        .map((e) => e.trim())
-        .filter((e) => e);
-      const response = await axios.post(`${API_BASE_URL}/api/process-emails`, {
-        emails,
-      });
-      setResults(response.data.results);
-      setError("");
+      const emails = input.split(/[\n,]+/)
+        .map(e => e.trim())
+        .filter(e => e);
+      
+      if (emails.length === 0) {
+        setError('Please enter at least one valid email');
+        return;
+      }
+  
+      const response = await axios.post(`${API_BASE_URL}/api/process-emails`, { emails });
+      
+      if (response.data.results.length === 0) {
+        setError('No valid email addresses found');
+      } else {
+        setResults(response.data.results);
+        setError('');
+      }
+      
     } catch (err) {
-      setError("Error processing emails. Please check your input.");
+      setError(err.response?.data?.error || 'Error processing emails');
       setResults([]);
     }
   };
@@ -102,6 +111,18 @@ function MainApp() {
     } finally {
       setLinkedinLoading(false);
     }
+  };
+
+  const startLinkedInAuth = () => {
+    const params = new URLSearchParams({
+      response_type: 'code',
+      client_id: process.env.REACT_APP_LINKEDIN_CLIENT_ID,
+      redirect_uri: process.env.REACT_APP_LINKEDIN_REDIRECT_URI,
+      scope: 'openid profile email',
+      state: 'RANDOM_STRING'
+    });
+    
+    window.location.href = `https://www.linkedin.com/oauth/v2/authorization?${params}`;
   };
 
   const downloadCSV = (data, filename) => {
@@ -144,18 +165,31 @@ function MainApp() {
                          focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50
                          transition-all duration-200"
               />
-              <button
-                onClick={processLinkedIn}
-                disabled={linkedinLoading}
-                className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold 
-                          rounded-lg transform transition-all duration-200 
-                          hover:-translate-y-1 active:translate-y-0
-                          border-b-4 border-blue-800 hover:border-blue-900
-                          shadow-lg hover:shadow-xl shadow-blue-900/30
-                          active:border-b-2 active:mt-[2px] disabled:opacity-50"
-              >
-                {linkedinLoading ? "PROCESSING..." : "LINKEDIN LOOKUP"}
-              </button>
+              <div className="flex gap-2">
+                <button
+                  onClick={processLinkedIn}
+                  disabled={linkedinLoading}
+                  className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold 
+                            rounded-lg transform transition-all duration-200 
+                            hover:-translate-y-1 active:translate-y-0
+                            border-b-4 border-blue-800 hover:border-blue-900
+                            shadow-lg hover:shadow-xl shadow-blue-900/30
+                            active:border-b-2 active:mt-[2px] disabled:opacity-50"
+                >
+                  {linkedinLoading ? "PROCESSING..." : "LOOKUP"}
+                </button>
+                <button
+                  onClick={startLinkedInAuth}
+                  className="px-8 py-3 bg-green-600 hover:bg-green-700 text-white font-bold 
+                            rounded-lg transform transition-all duration-200 
+                            hover:-translate-y-1 active:translate-y-0
+                            border-b-4 border-green-800 hover:border-green-900
+                            shadow-lg hover:shadow-xl shadow-green-900/30
+                            active:border-b-2 active:mt-[2px]"
+                >
+                  AUTH
+                </button>
+              </div>
             </div>
 
             {profileData && (
