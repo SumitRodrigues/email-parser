@@ -1,16 +1,24 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const axios = require('axios');
 
 const app = express();
 const port = process.env.PORT || 5001;
 
+// Enhanced CORS configuration
 app.use(cors({
-    origin: [
-      'http://localhost:3000',
-      'https://email-parser-phi.vercel.app/' // Your live frontend URL
-    ]
-  }));
+  origin: [
+    'https://email-parser-k288jxrhg-sumit-rodrigues-projects.vercel.app',
+    'https://email-parser.vercel.app'
+  ],
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+}));
+
+app.options('*', cors());
+app.use(bodyParser.json());
 
 function capitalize(str) {
   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
@@ -42,6 +50,6 @@ app.post('/api/process-emails', (req, res) => {
   }
 });
 
-app.listen(port, '0.0.0.0', () => {
-    console.log(`Server running on port ${port}`);
+app.listen(process.env.PORT || 5001, '0.0.0.0', () => {
+    console.log(`Server running on port ${process.env.PORT || 5001}`);
 });
