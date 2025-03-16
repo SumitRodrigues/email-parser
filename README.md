@@ -1,106 +1,97 @@
 # Email Name Extractor
 
 ```markdown
-A full-stack application that extracts first and last names from email addresses, with CSV export capabilities.
+A simple web application that extracts first and last names from email addresses. You can also download the results as a CSV file.
 
-![Demo Screenshot]
 
-<img width="1385" alt="Screenshot 2025-03-15 at 10 29 07 PM" src="https://github.com/user-attachments/assets/98e99bae-4af8-40f0-8d1f-cf8a7f729ea9" />
+## 🌟 Features
 
-## Features
+- Extract first and last names from email addresses
+- Download parsed data as CSV
+- Clean and modern user interface
+- Responsive design for mobile and desktop
+- Fast backend API using Node.js and Express
 
-- 📧 Email parsing from local-part
-- 📥 CSV download for first/last names
-- 🎨 Modern UI with dark theme
-- ✨ Interactive 3D animations
-- 📱 Responsive design
-- 🔒 Secure CORS configuration
-- ⚡ Fast API processing
 
-## Technologies
+## 🛠 Tech Stack
 
-![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
-![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
-![Express](https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white)
-![Render](https://img.shields.io/badge/Render-46E3B7?style=for-the-badge&logo=render&logoColor=white)
-![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)
+- **Frontend**: React, Tailwind CSS
+- **Backend**: Node.js, Express
+- **Deployment**: Vercel (Frontend), Render (Backend)
 
-## Installation
+
+## 🚀 Getting Started
 
 ### Prerequisites
+
 - Node.js v18+
 - npm v9+
 
-### Local Development
+### Run Locally
 
-1. **Clone repository**
-   ```bash
-   git clone https://github.com/SumitRodrigues/email-parser.git
-   cd email-parser
-   ```
+#### 1. Clone the repository
 
-2. **Backend Setup**
-   ```bash
-   cd backend
-   npm install
-   cp .env.example .env
-   npm start
-   ```
+```bash
+git clone https://github.com/SumitRodrigues/email-parser.git
+cd email-parser
+```
 
-3. **Frontend Setup**
-   ```bash
-   cd ../frontend
-   npm install
-   cp .env.example .env
-   npm start
-   ```
+#### 2. Start the backend
 
-## Deployment
+```bash
+cd backend
+npm install
+cp .env.example .env
+npm start
+```
+
+#### 3. Start the frontend
+
+```bash
+cd ../frontend
+npm install
+cp .env.example .env
+npm start
+```
+
+> The frontend should connect to the backend using the `REACT_APP_API_URL` variable in `.env`.
+
+
+## 🌐 Deployment
 
 ### Frontend (Vercel)
-1. Set `REACT_APP_API_URL` environment variable
-2. Connect GitHub repository
-3. Deploy from main branch
+
+- Set environment variable: `REACT_APP_API_URL`
+- Connect GitHub repository
+- Deploy from `main` branch
 
 ### Backend (Render)
-1. Create Web Service with Node.js environment
-2. Set environment variables:
-   ```env
-   PORT=10000
-   NODE_ENV=production
-   ```
-3. Set build command: `npm install`
-4. Set start command: `npm start`
 
-## Project Structure
+- Create a new Web Service
+- Set environment variables:
+  ```env
+  PORT=10000
+  NODE_ENV=production
+  ```
+- Build command: `npm install`
+- Start command: `npm start`
 
-```
-email-parser/
-├── backend
-│   ├── server.js        # Express API
-│   ├── package.json
-│   └── Procfile
-└── frontend
-    ├── public
-    ├── src
-    │   ├── App.js       # Main component
-    │   └── ...          # Other components
-    └── package.json
-```
+---
 
-## API Documentation
+## 📦 API Overview
 
-**Endpoint**: `POST /api/process-emails`
+### POST `/api/process-emails`
 
-**Request Body**:
+#### Request
+
 ```json
 {
   "emails": ["john.doe@example.com", "jane_smith@domain.com"]
 }
 ```
 
-**Response**:
+#### Response
+
 ```json
 {
   "results": [
@@ -108,58 +99,58 @@ email-parser/
       "email": "john.doe@example.com",
       "firstName": "John",
       "lastName": "Doe"
+    },
+    {
+      "email": "jane_smith@domain.com",
+      "firstName": "Jane",
+      "lastName": "Smith"
     }
   ]
 }
 ```
 
-## Troubleshooting
+---
 
-**CORS Errors**:
-- Verify allowed origins in `server.js`
-- Ensure frontend URL is in CORS config
+## 📁 Project Structure
 
-**Port Binding Issues**:
-- Use `PORT=10000` in production
-- Bind to `0.0.0.0` host
-
-**Deployment Failures**:
-- Check build logs in Render/Vercel
-- Verify `package.json` exists in correct directory
-
-## License
-
-[MIT License](LICENSE)
-
-## Contributing
-
-1. Fork the project
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+```
+email-parser/
+├── backend       # Node.js API
+└── frontend      # React frontend
+```
 
 ---
 
-**Author**: Sumit Rodrigues  
-[![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/SumitRodrigues)  
-**Live Demo**: [https://email-parser.vercel.app](https://email-parcel.vercel.app)  
-**Contact**: [your.email@domain.com](mailto:your.email@domain.com)
+## ❓ Troubleshooting
+
+- **CORS Issues**: Check allowed origins in `server.js`
+- **Frontend not connecting**: Make sure `REACT_APP_API_URL` is set correctly
+- **Port issues**: Use `PORT=10000` and bind to `0.0.0.0`
+
+---
+
+## 👨‍💻 Author
+
+**Sumit Rodrigues**
+
+- GitHub: [@SumitRodrigues](https://github.com/SumitRodrigues)
+- Live Demo: [Click Here](https://email-parser-k288jxrhg-sumit-rodrigues-projects.vercel.app/)
+- Contact: [sumitrod11@gmail.com](mailto:sumitrod11@gmail.com)
+
+---
+
+## 📄 License
+
+This project is licensed under the [MIT License](LICENSE).
+
+---
+
+## 🙌 Contributing
+
+1. Fork this repo
+2. Create a new branch: `git checkout -b feature/YourFeature`
+3. Make your changes
+4. Commit: `git commit -m "Add YourFeature"`
+5. Push: `git push origin feature/YourFeature`
+6. Open a Pull Request
 ```
-
-This README includes:
-- Modern badge styling
-- Clear installation/deployment steps
-- API documentation
-- Troubleshooting common issues
-- Responsive design elements
-- License and contribution guidelines
-- Social badges
-- Placeholders for your actual URLs and contact info
-
-To use it:
-1. Create `LICENSE` file (optional)
-2. Replace placeholder URLs with your actual deployment URLs
-3. Add real screenshots
-4. Update contact information
-5. Save as `README.md` in your repository root
